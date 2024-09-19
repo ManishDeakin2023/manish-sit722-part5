@@ -45,7 +45,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: inventory_management
+  name: inventory-management
   labels:
     app: inventory-management
 spec:

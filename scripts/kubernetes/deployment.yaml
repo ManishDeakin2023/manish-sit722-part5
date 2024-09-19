@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: book_catalog_cnt
-        image: $CONTAINER_REGISTRY.azurecr.io/book_catlog_az:$VERSION
+        image: $CONTAINER_REGISTRY.azurecr.io/book_catalog:$VERSION
         imagePullPolicy: IfNotPresent 
         env:
         - name: PORT
@@ -60,7 +60,7 @@ spec:
     spec:
       containers:
       - name: inventory_management_cnt
-        image: $CONTAINER_REGISTRY.azurecr.io/inventory_management_az:$VERSION
+        image: $CONTAINER_REGISTRY.azurecr.io/inventory_management:$VERSION
         imagePullPolicy: IfNotPresent 
         env:
         - name: PORT

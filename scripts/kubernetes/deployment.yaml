@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: book_catalog
+  name: book-catalog
   labels:
-    app: book_catalog
+    app: book-catalog
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: book_catalog
+      app: book-catalog
   template:
     metadata:
       labels:
-        app: book_catalog
+        app: book-catalog
     spec:
       containers:
-      - name: book_catalog_cnt
+      - name: book-catalog-cnt
         image: $CONTAINER_REGISTRY.azurecr.io/book_catalog:$VERSION
         imagePullPolicy: IfNotPresent 
         env:
@@ -28,10 +28,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: book_catalog
+  name: book-catalog
 spec:
   selector:
-    app: book_catalog
+    app: book-catalog
   type: LoadBalancer
   ports:
     - protocol: TCP
@@ -47,19 +47,19 @@ kind: Deployment
 metadata:
   name: inventory_management
   labels:
-    app: inventory_management
+    app: inventory-management
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: inventory_management
+      app: inventory-management
   template:
     metadata:
       labels:
-        app: inventory_management
+        app: inventory-management
     spec:
       containers:
-      - name: inventory_management_cnt
+      - name: inventory-management-cnt
         image: $CONTAINER_REGISTRY.azurecr.io/inventory_management:$VERSION
         imagePullPolicy: IfNotPresent 
         env:
@@ -71,10 +71,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: inventory_management
+  name: inventory-management
 spec:
   selector:
-    app: inventory_management
+    app: inventory-management
   type: LoadBalancer
   ports:
     - protocol: TCP

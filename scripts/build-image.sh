@@ -1,4 +1,4 @@
 
 set -e
 
-docker compose up --build
+docker compose build

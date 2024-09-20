@@ -97,6 +97,10 @@ jobs:
           VERSION: ${{ github.sha }}
         run: ./scripts/deploy.sh
 
+      # Sleep for 30 seconds to allow the services to be ready
+      - name: Wait for services to be ready
+        run: sleep 60
+
       - name: Get kube details
         run: |
               kubectl get pods

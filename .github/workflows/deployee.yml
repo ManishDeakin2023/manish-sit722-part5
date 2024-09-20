@@ -98,6 +98,7 @@ jobs:
         run: ./scripts/deploy.sh
 
       - name: Get kube details
-        run: echo kubectl get pods 
-        run: echo kubectl get deployments
-        run: echo kubectl get services
+        run: |
+              kubectl get pods
+              kubectl get deployments
+              kubectl get services

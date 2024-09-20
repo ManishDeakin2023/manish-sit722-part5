@@ -1,12 +1,9 @@
-
-name: Deploy library microservice to kubernetes
+name: Deploy Library Microservice to Kubernetes
 
 on:
-
   push: 
     branches:
       - main
-
 
   workflow_dispatch: 
 
@@ -23,34 +20,32 @@ jobs:
       VERSION: ${{ github.sha }}
 
     steps:
-      - name: checkout code
+      - name: Checkout repository code
         uses: actions/checkout@v3
 
-      - name: setup azure login
+      - name: Authenticate with Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }} 
           
-      - name: Setup terraform
+      - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.6
 
-      - name: terraform init
+      - name: Initialize Terraform
         working-directory: ./scripts/terraform
         run: terraform init
 
-      - name: terraform plan
+      - name: Terraform plan - Show execution plan
         working-directory: ./scripts/terraform
         run: terraform plan
 
-      - name: terraform apply
+      - name: Terraform apply - Deploy resources
         working-directory: ./scripts/terraform
         run: terraform apply -auto-approve
 
-
-
-      - name: Get Container Registry Name
+      - name: Get Azure Container Registry Name
         working-directory: ./scripts/terraform
         run: |
           CONTAINER_REGISTRY=$(terraform-bin output -raw registry_name)
@@ -60,48 +55,44 @@ jobs:
         run: |
           echo ${{ secrets.CLIENT_SECRET }} | docker login ${{ env.CONTAINER_REGISTRY }}.azurecr.io -u ${{ secrets.CLIENT_ID }} --password-stdin
            
-      
-
-      - name: Make sh files executable
+      - name: Make Shell Scripts Executable
         working-directory: ./scripts/
         run: chmod +x *.sh
 
-      - name: Build Docker images
+      - name: Build Docker Images
         env:
           CONTAINER_REGISTRY: ${{ env.CONTAINER_REGISTRY }}
           VERSION: ${{ github.sha }}
         run: ./scripts/build-image.sh
 
-
-      - name: Push Docker images
+      - name: Push Docker Images to Container Registry
         env:
           CONTAINER_REGISTRY: ${{ env.CONTAINER_REGISTRY }}
           VERSION: ${{ github.sha }}
         run: ./scripts/push-image.sh
 
-      - name: Get Kubernetes Config
+      - name: Retrieve Kubernetes Config from Terraform
         working-directory: ./scripts/terraform
         run: |
           KUBECONFIG_CONTENT=$(terraform-bin output -raw kube_config)
           echo "KUBECONFIG_CONTENT=$KUBECONFIG_CONTENT" >> $GITHUB_ENV
 
-      - name: Set up kubectl
+      - name: Configure kubectl
         uses: tale/kubectl-action@v1
         with:
           base64-kube-config: ${{ env.KUBECONFIG_CONTENT }}
           kubectl-version: v1.30.3
 
-      - name: Deploy Docker images
+      - name: Deploy Microservice to Kubernetes Cluster
         env:
           CONTAINER_REGISTRY: ${{ env.CONTAINER_REGISTRY }}
           VERSION: ${{ github.sha }}
         run: ./scripts/deploy.sh
 
-      # Sleep for 30 seconds to allow the services to be ready
-      - name: Wait for services to be ready
+      - name: Wait for Kubernetes Services to be Ready
         run: sleep 60
 
-      - name: Get kube details
+      - name: Display Kubernetes Deployment Details
         run: |
               kubectl get pods
               kubectl get deployments
